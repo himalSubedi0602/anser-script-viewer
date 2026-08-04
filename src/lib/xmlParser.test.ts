@@ -1,11 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { parseXmlString } from "./xmlParser";
 import type { XmlElementNode } from "./xmlParser.types";
+import { asElement as asElementNode } from "./xmlParser.testHelpers";
 
 function asElement(xml: string): XmlElementNode {
-  const node = parseXmlString(xml);
-  if (node.kind !== "element") throw new Error("expected root to be an element");
-  return node;
+  return asElementNode(parseXmlString(xml));
 }
 
 describe("parseXmlString - elements and attributes", () => {
