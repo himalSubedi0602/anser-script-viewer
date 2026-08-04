@@ -1,7 +1,7 @@
 import { DOMParser, Node } from "@xmldom/xmldom";
 import type { Attr, Document, Element } from "@xmldom/xmldom";
-import type { XmlAttribute, XmlNode } from "./xmlParser.types";
-import { XmlParseError } from "./xmlParser.types";
+import type { XmlAttribute, XmlNode } from "./xmlParser.types.ts";
+import { XmlParseError } from "./xmlParser.types.ts";
 
 const XML_MIME_TYPE = "application/xml";
 
