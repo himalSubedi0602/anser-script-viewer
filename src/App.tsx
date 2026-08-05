@@ -1,5 +1,6 @@
 import { useParsedScript } from "./hooks/useParsedScript";
 import { ScriptViewer } from "./components/ScriptViewer";
+import { ErrorState } from "./components/ErrorState";
 import styles from "./App.module.css";
 
 function App() {
@@ -10,14 +11,7 @@ function App() {
   }
 
   if (state.status === "error") {
-    // Basic version for now - plan item 11 gives this its own dedicated,
-    // clearer treatment per the "handle invalid XML clearly" requirement.
-    return (
-      <div className={styles.centered}>
-        <h1>Couldn't load the script</h1>
-        <p>{state.error.message}</p>
-      </div>
-    );
+    return <ErrorState error={state.error} />;
   }
 
   if (state.data.kind !== "element") {
