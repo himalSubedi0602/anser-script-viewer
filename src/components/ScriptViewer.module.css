@@ -1,0 +1,32 @@
+.layout {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.body {
+  display: flex;
+  gap: 24px;
+  padding: 20px 24px;
+  flex: 1;
+  align-items: flex-start;
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+}
+
+.otherFields {
+  text-align: left;
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+}
+
+.otherFields h3 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text);
+}

@@ -1,0 +1,47 @@
+.nav {
+  width: 220px;
+  flex-shrink: 0;
+  text-align: left;
+}
+
+.nav h3 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text);
+  margin: 0 0 8px;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.item,
+.activeItem {
+  width: 100%;
+  text-align: left;
+  font-family: var(--sans);
+  font-size: 14px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: none;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.item:hover {
+  background: var(--code-bg);
+}
+
+.activeItem {
+  background: var(--accent-bg);
+  border-color: var(--accent-border);
+  color: var(--text-h);
+  font-weight: 600;
+}

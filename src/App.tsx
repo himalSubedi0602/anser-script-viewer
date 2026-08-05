@@ -1,31 +1,30 @@
 import { useParsedScript } from "./hooks/useParsedScript";
+import { ScriptViewer } from "./components/ScriptViewer";
+import styles from "./App.module.css";
 
-// TEMPORARY smoke-test render for plan item 9 (frontend data loading only).
-// The real UI (client/script/version, page nav, element cards, etc.) is item 10
-// and will replace this.
 function App() {
   const state = useParsedScript();
 
   if (state.status === "loading") {
-    return <p>Loading script.xml...</p>;
+    return <div className={styles.centered}>Loading script.xml…</div>;
   }
 
   if (state.status === "error") {
-    return <p>Error: {state.error.message}</p>;
+    // Basic version for now - plan item 11 gives this its own dedicated,
+    // clearer treatment per the "handle invalid XML clearly" requirement.
+    return (
+      <div className={styles.centered}>
+        <h1>Couldn't load the script</h1>
+        <p>{state.error.message}</p>
+      </div>
+    );
   }
 
-  const root = state.data;
-  const childCount = root.kind === "element" ? root.children.length : 0;
+  if (state.data.kind !== "element") {
+    return <div className={styles.centered}>Unexpected document shape - root is not an element.</div>;
+  }
 
-  return (
-    <div>
-      <p>Parsed live in the browser.</p>
-      <p>
-        Root element: <code>{root.kind === "element" ? root.name : root.kind}</code>
-      </p>
-      <p>Root children: {childCount}</p>
-    </div>
-  );
+  return <ScriptViewer root={state.data} />;
 }
 
 export default App;

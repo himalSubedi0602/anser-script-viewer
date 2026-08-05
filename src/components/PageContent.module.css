@@ -1,0 +1,34 @@
+.page {
+  text-align: left;
+}
+
+.page h2 {
+  text-align: left;
+}
+
+.titleRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.page h3 {
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text);
+  margin: 24px 0 10px;
+}
+
+.summaryHeader {
+  color: var(--text);
+  opacity: 0.8;
+  margin-bottom: 16px;
+}
+
+.muted {
+  color: var(--text);
+  opacity: 0.6;
+  font-style: italic;
+}
