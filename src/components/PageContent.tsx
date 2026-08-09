@@ -1,11 +1,12 @@
 import type { XmlElementNode } from "../lib/xmlParser.types";
-import { findChildElement, textContent } from "../lib/xmlNodeHelpers";
+import { findChildElement, findChildElements, textContent } from "../lib/xmlNodeHelpers";
 import { AttributeBadges } from "./AttributeBadges";
 import { ElementCard } from "./ElementCard";
+import { StyleCard } from "./StyleCard";
 import { FieldGroup } from "./FieldGroup";
 import styles from "./PageContent.module.css";
 
-const SHOWN_ELSEWHERE = new Set(["Name", "SummaryHeader", "XmlElements"]);
+const SHOWN_ELSEWHERE = new Set(["Name", "SummaryHeader", "XmlElements", "Styles"]);
 
 export function PageContent({ page }: { page: XmlElementNode }) {
   const name = findChildElement(page, "Name");
@@ -14,6 +15,9 @@ export function PageContent({ page }: { page: XmlElementNode }) {
   const elements = xmlElementsContainer
     ? xmlElementsContainer.children.filter((c): c is XmlElementNode => c.kind === "element")
     : [];
+
+  const stylesContainer = findChildElement(page, "Styles");
+  const pageStyles = findChildElements(stylesContainer, "Style");
 
   // Everything else on the page (Styles, XmlNodes, CompletionAction, and anything
   // unfamiliar) renders generically here too - nothing on the page is dropped just
@@ -35,6 +39,15 @@ export function PageContent({ page }: { page: XmlElementNode }) {
           <ElementCard key={i} element={el} />
         ))}
       </section>
+
+      {pageStyles.length > 0 && (
+        <section>
+          <h3>Styles ({pageStyles.length})</h3>
+          {pageStyles.map((style, i) => (
+            <StyleCard key={i} style={style} />
+          ))}
+        </section>
+      )}
 
       <section>
         <h3>Page details</h3>

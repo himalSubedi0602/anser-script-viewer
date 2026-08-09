@@ -1,24 +1,37 @@
+import { useState } from "react";
 import { useParsedScript } from "./hooks/useParsedScript";
+import type { ScriptSource } from "./hooks/useParsedScript";
 import { ScriptViewer } from "./components/ScriptViewer";
 import { ErrorState } from "./components/ErrorState";
+import { SourcePicker } from "./components/SourcePicker";
 import styles from "./App.module.css";
 
 function App() {
-  const state = useParsedScript();
+  const [source, setSource] = useState<ScriptSource>({ kind: "fixture" });
+  // Bumped on every source change, and used as ScriptViewer's key, so switching
+  // documents always starts from a clean ScriptViewer (fresh selected page) instead
+  // of trying to reconcile old per-document state (e.g. selectedIndex) by hand.
+  const [sourceVersion, setSourceVersion] = useState(0);
 
-  if (state.status === "loading") {
-    return <div className={styles.centered}>Loading script.xml…</div>;
+  function handleSourceChange(next: ScriptSource) {
+    setSource(next);
+    setSourceVersion((v) => v + 1);
   }
 
-  if (state.status === "error") {
-    return <ErrorState error={state.error} />;
-  }
+  const state = useParsedScript(source);
 
-  if (state.data.kind !== "element") {
-    return <div className={styles.centered}>Unexpected document shape - root is not an element.</div>;
-  }
+  return (
+    <>
+      <SourcePicker mode={source.kind} onSourceChange={handleSourceChange} />
 
-  return <ScriptViewer root={state.data} />;
+      {state.status === "loading" && <div className={styles.centered}>Loading…</div>}
+      {state.status === "error" && <ErrorState error={state.error} />}
+      {state.status === "ready" && state.data.kind !== "element" && (
+        <div className={styles.centered}>Unexpected document shape - root is not an element.</div>
+      )}
+      {state.status === "ready" && state.data.kind === "element" && <ScriptViewer key={sourceVersion} root={state.data} />}
+    </>
+  );
 }
 
 export default App;

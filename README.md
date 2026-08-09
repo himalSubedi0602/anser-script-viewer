@@ -12,7 +12,7 @@ npm run dev
 | Command | What it does |
 |---|---|
 | `npm run dev` | Starts the app (parses the fixture live, in the browser) |
-| `npm test` | Runs the full test suite (21 tests) |
+| `npm test` | Runs the full test suite (32 tests) |
 | `npm run build` | Type-checks and produces a production build |
 | `npm run generate:json` | Regenerates `data/script.json` from the fixture |
 
@@ -69,12 +69,13 @@ src/
     xmlParser.ts               # the generic parser
     xmlParser.types.ts          # XmlNode / XmlAttribute / XmlParseError
     xmlNodeHelpers.ts           # name-based lookups - UI layout only, not the parser
-    *.test.ts                   # parser test suite
+    xmlRefResolver.ts           # resolves FieldRef/NavScreen/style-name cross-references
+    *.test.ts                   # parser + resolver test suite
   hooks/
-    useParsedScript.ts          # fetches + parses the fixture live, in the browser
+    useParsedScript.ts          # parses the current source (fixture/pasted/uploaded) live, in the browser
   components/                   # ScriptViewer, Header, PageNav, PageContent,
-                                 # ElementCard, FieldGroup, AttributeBadges,
-                                 # RawJsonToggle, ErrorState
+                                 # ElementCard, StyleCard, FieldGroup, ReferenceRow,
+                                 # AttributeBadges, RawJsonToggle, SourcePicker, ErrorState
 .github/workflows/ci.yml        # checkout -> install -> test -> build
 ```
 
@@ -82,7 +83,7 @@ src/
 
 `src/lib/xmlParser.newElementSurvival.test.ts` splices a brand-new element and attribute — never present in the original fixture — into an in-memory copy, then proves the new element's name, its attribute's name and value, its own parent-child relationship, and its position among real siblings all survive conversion, with no parser change.
 
-The wider suite (21 tests, `npm test`) backs this up further:
+The wider parser test suite (21 of `npm test`'s 32 tests — the rest cover cross-reference resolution, see below) backs this up further:
 - A full parse → serialize → re-parse round trip against the **entire real fixture** — if anything were silently lost, the two parses would diverge.
 - Explicit checks for attribute order, sibling order (including repeated tag names), namespaced elements/attributes, comments, and CDATA.
 
@@ -111,7 +112,7 @@ Any test that needs a "modified" or "new" version of the XML (like the survival 
 | All supplied info presented and organized | `ScriptViewer`/`Header`/`PageContent`/`ElementCard` |
 | Readable, intentional interface (not just a JSON dump) | Component design above; raw JSON is an opt-in supplement, not the default view |
 | Invalid XML / parsing failures handled clearly | `ErrorState.tsx`; 5 dedicated invalid-XML tests |
-| Automated parser tests | 21 tests, `npm test` |
+| Automated parser tests | 21 parser tests + 11 cross-reference resolver tests, 32 total, `npm test` |
 | GitHub Actions CI, clean checkout | `.github/workflows/ci.yml` |
 | Easy for another developer/AI tool to understand, run, test, extend | This README + folder structure |
 
@@ -119,10 +120,10 @@ Any test that needs a "modified" or "new" version of the XML (like the survival 
 
 - The real fixture contains no XML comments or CDATA sections, so those parser code paths are covered by unit tests on small hand-written snippets, not by the real fixture itself.
 - The XML declaration (`<?xml version="1.0" encoding="utf-8"?>`) isn't captured in the parsed output — it's parser/encoding metadata, not script content.
-- There's no "paste/upload your own XML" feature in the UI. It would be a natural way to demo the parser's genericity or the error states live, but it's real feature scope beyond what's asked, so it's left out deliberately.
-- Cross-references within the data — `FieldRef`'s `elementId`, an element's `NavScreen` pointing at another page's `pageId`, a style referenced by name rather than ID — are fully present and viewable (including via the raw JSON toggle), but not automatically resolved into clickable links.
 
-## What's next
+## Beyond the original ask
 
-- Resolve `FieldRef` / `NavScreen` / style-name references into clickable in-app links.
-- A "paste XML to test" mode, if live-demoing the generic parser or error states becomes a real need.
+Two things went beyond what was originally asked, added afterward:
+
+- **Clickable cross-references.** `FieldRef`'s `elementId`, an element's `NavScreen` pointing at another page's `pageId`, and a style referenced by name (`LabelStyle`/`InputStyle`) rather than ID are resolved and rendered as clickable links (`src/lib/xmlRefResolver.ts`) — clicking one jumps to and highlights whatever it resolved to, even across pages. A reference that matches nothing (the fixture has two genuine cases: `StandardLabel` and `PhoneInput`, both referenced but never defined) renders as plain text, same as before. This required one narrow, explicitly documented exception to the parser-agnostic rendering rule — see `AGENTS.md`.
+- **Live XML testing mode.** A source picker (`SourcePicker.tsx`) lets you paste XML or upload a `.xml` file instead of viewing the bundled fixture, through the exact same `parseXmlString` and rendering pipeline — a live way to demo the parser's genericity or the error states with something other than the supplied fixture.

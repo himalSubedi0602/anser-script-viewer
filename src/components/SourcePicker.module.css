@@ -1,0 +1,73 @@
+.wrapper {
+  padding: 12px 0;
+  text-align: left;
+}
+
+.tabs {
+  display: flex;
+  gap: 6px;
+}
+
+.tab {
+  font: inherit;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 14px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.activeTab {
+  border-color: var(--accent-border);
+  color: var(--text-h);
+}
+
+.activeDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: inline-block;
+}
+
+.panel {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 640px;
+}
+
+.textarea {
+  font-family: var(--mono);
+  font-size: 13px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--code-bg);
+  color: var(--text-h);
+  resize: vertical;
+}
+
+.loadButton {
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  align-self: flex-start;
+  padding: 6px 16px;
+  border-radius: 999px;
+  border: none;
+  background: var(--accent);
+  color: var(--bg);
+  cursor: pointer;
+}
+
+.loadButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

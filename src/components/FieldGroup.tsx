@@ -1,5 +1,8 @@
 import type { XmlElementNode, XmlNode } from "../lib/xmlParser.types";
+import { resolveReference } from "../lib/xmlRefResolver";
+import { useRefResolution } from "./RefResolutionContext";
 import { AttributeBadges } from "./AttributeBadges";
+import { ReferenceRow } from "./ReferenceRow";
 import styles from "./FieldGroup.module.css";
 
 function isDisplayable(node: XmlNode): boolean {
@@ -9,6 +12,17 @@ function isDisplayable(node: XmlNode): boolean {
 }
 
 function ElementRow({ node }: { node: XmlElementNode }) {
+  // The one deliberate, documented exception to "never branch on a name" - see
+  // AGENTS.md. All name-awareness lives in resolveReference(); this component only
+  // reacts to its result. Undefined covers both "not a reference tag" and "a
+  // reference tag with no match" (a dangling reference), so both fall straight
+  // through to the ordinary shape-based rendering below with no other change needed.
+  const refResolution = useRefResolution();
+  const resolved = refResolution && resolveReference(node, refResolution.indexes);
+  if (resolved) {
+    return <ReferenceRow node={node} resolved={resolved} onActivate={() => refResolution.onActivateRef(resolved)} />;
+  }
+
   const visibleChildren = node.children.filter(isDisplayable);
   const childElements = visibleChildren.filter((c) => c.kind === "element");
 

@@ -1,5 +1,8 @@
+import { useEffect, useRef } from "react";
 import type { XmlElementNode } from "../lib/xmlParser.types";
-import { findAttr } from "../lib/xmlNodeHelpers";
+import { findAttr, findChildElement, textContent } from "../lib/xmlNodeHelpers";
+import { fieldAnchorId } from "../lib/xmlRefResolver";
+import { useRefResolution } from "./RefResolutionContext";
 import { AttributeBadges } from "./AttributeBadges";
 import { FieldGroup } from "./FieldGroup";
 import { RawJsonToggle } from "./RawJsonToggle";
@@ -16,8 +19,24 @@ export function ElementCard({ element }: { element: XmlElementNode }) {
   const typeLabel = xsiType ?? element.name;
   const otherAttrs = element.attributes.filter((a) => a.name !== "xsi:type");
 
+  const id = textContent(findChildElement(element, "Id"));
+  const anchorId = id ? fieldAnchorId(id) : undefined;
+
+  const ref = useRefResolution();
+  const isHighlighted = anchorId !== undefined && ref?.highlightedAnchorId === anchorId;
+  const detailsRef = useRef<HTMLDetailsElement>(null);
+
+  useEffect(() => {
+    if (isHighlighted) detailsRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [isHighlighted]);
+
   return (
-    <details className={styles.card} open>
+    <details
+      ref={detailsRef}
+      id={anchorId}
+      className={isHighlighted ? `${styles.card} ${styles.highlighted}` : styles.card}
+      open
+    >
       <summary className={styles.summary}>
         <span className={styles.typeBadge}>{typeLabel}</span>
         <AttributeBadges attributes={otherAttrs} />
