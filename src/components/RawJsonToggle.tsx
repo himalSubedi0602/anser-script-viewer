@@ -1,15 +1,16 @@
 import { useState } from "react";
-import type { XmlNode } from "../lib/xmlParser.types";
+import type { XmlElementNode } from "../lib/xmlParser.types";
+import { elementToCleanJson } from "../lib/xmlNodeToCleanJson";
 import styles from "./RawJsonToggle.module.css";
 
-export function RawJsonToggle({ node }: { node: XmlNode }) {
+export function RawJsonToggle({ node }: { node: XmlElementNode }) {
   const [open, setOpen] = useState(false);
   return (
     <div className={styles.wrapper}>
       <button type="button" className={styles.toggle} onClick={() => setOpen((o) => !o)}>
-        {open ? "Hide raw JSON" : "View raw JSON"}
+        {open ? "Hide JSON" : "View JSON"}
       </button>
-      {open && <pre className={styles.json}>{JSON.stringify(node, null, 2)}</pre>}
+      {open && <pre className={styles.json}>{JSON.stringify(elementToCleanJson(node), null, 2)}</pre>}
     </div>
   );
 }
